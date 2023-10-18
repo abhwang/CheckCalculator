@@ -4,6 +4,8 @@ import { OverridableComponent } from '@mui/material/OverridableComponent';
 
 interface NavItemProps {
   navItems: NavItem[];
+  position: number;
+  onChange: (e: React.SyntheticEvent<Element, Event>, value: any) => void;
 }
 
 interface NavItem {
@@ -11,16 +13,13 @@ interface NavItem {
   icon: OverridableComponent<SvgIconTypeMap<{}, "svg">> & { muiName: string; };
 }
 
-export default function BottomNavBar({ navItems }: NavItemProps) {
-  const [navValue, setNavValue] = useState(0);
+export default function BottomNavBar({ navItems, position, onChange }: NavItemProps) {
 
   return (
     <BottomNavigation
       showLabels
-      value={navValue}
-      onChange={(event, newValue) => {
-        setNavValue(newValue);
-      }}
+      value={position}
+      onChange={onChange}
     >
 
       {navItems.map((item, index) => {

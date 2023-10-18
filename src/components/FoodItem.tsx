@@ -1,5 +1,5 @@
 import { ExpandMore, ExpandLess } from '@mui/icons-material';
-import { Checkbox, Collapse, List, ListItem, ListItemButton, ListItemText } from '@mui/material'
+import { Checkbox, Collapse, List, ListItem, ListItemButton, ListItemIcon, ListItemText } from '@mui/material'
 import { useState } from 'react'
 
 interface Props {
@@ -22,7 +22,11 @@ export default function FoodItem({ item, people }: Props) {
     <List>
       <ListItemButton onClick={handleClick}>
         <ListItemText>{item}</ListItemText>
-        {open ? <ExpandLess /> : <ExpandMore />}
+        {people.length > 0 &&
+          <>
+            {open ? <ExpandLess /> : <ExpandMore />}
+          </>
+        }
       </ListItemButton>
       <Collapse in={open} timeout="auto" unmountOnExit>
         <List component="div" disablePadding>
@@ -39,6 +43,13 @@ export default function FoodItem({ item, people }: Props) {
               >
                 <ListItemText>{person}</ListItemText>
               </ListItem>
+              // <ListItemButton onClick={handleToggle}>
+              //   <ListItemText>{person}</ListItemText>
+              //   <Checkbox
+              //     edge="end"
+              //     checked={checked}
+              //   />
+              // </ListItemButton>
             )
           })}
         </List>
