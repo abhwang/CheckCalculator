@@ -28,7 +28,6 @@ function App() {
   });
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setItem({ ...item, [e.target.name]: e.target.value });
-    console.log(item);
   }
   const [items, setItems] = useState<Food[]>([]);
   const addItem = () => {

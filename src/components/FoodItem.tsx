@@ -14,10 +14,7 @@ export default function FoodItem(props: Props) {
     setOpen(!open);
   }
 
-  const [checked, setChecked] = useState(false);
-  const handleToggle = () => {
-    setChecked(!checked);
-  }
+
 
   const convertedPrice = '$' + (Math.round(props.itemPrice * 100) / 100).toFixed(2);
 
@@ -33,32 +30,30 @@ export default function FoodItem(props: Props) {
 
       <Collapse in={open} timeout="auto" unmountOnExit>
         <List component="div" disablePadding>
-          {props.people.map((person) => {
+          {props.people.map((person, index) => {
             return (
-              <ListItem
-                sx={{ pl: 4 }}
-                secondaryAction={
-                  <Checkbox
-                    edge="end"
-                    checked={checked}
-                    onChange={handleToggle}
-                  />
-                }
-              >
-                <ListItemText>{person}</ListItemText>
-              </ListItem>
-              // <ListItemButton onClick={handleToggle}>
-              //   <ListItemText>{person}</ListItemText>
-              //   <Checkbox
-              //     edge="end"
-              //     checked={checked}
-              //   />
-              // </ListItemButton>
+              CheckBoxItem(person, index)
             )
           })}
         </List>
       </Collapse>
     </List>
+  )
+}
 
+function CheckBoxItem(person: string, key: number) {
+  const [checked, setChecked] = useState(false);
+  const handleToggle = () => {
+    setChecked(!checked);
+  }
+
+  return (
+    <ListItemButton key={key} onClick={handleToggle}>
+      <ListItemText>{person}</ListItemText>
+      <Checkbox
+        edge="end"
+        checked={checked}
+      />
+    </ListItemButton>
   )
 }
