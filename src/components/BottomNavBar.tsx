@@ -1,4 +1,3 @@
-import { useState } from 'react';
 import { BottomNavigation, BottomNavigationAction, SvgIconTypeMap } from '@mui/material'
 import { OverridableComponent } from '@mui/material/OverridableComponent';
 
@@ -13,16 +12,16 @@ interface NavItem {
   icon: OverridableComponent<SvgIconTypeMap<{}, "svg">> & { muiName: string; };
 }
 
-export default function BottomNavBar({ navItems, position, onChange }: NavItemProps) {
+export default function BottomNavBar(props: NavItemProps) {
 
   return (
     <BottomNavigation
       showLabels
-      value={position}
-      onChange={onChange}
+      value={props.position}
+      onChange={props.onChange}
     >
 
-      {navItems.map((item, index) => {
+      {props.navItems.map((item, index) => {
         return (
           <BottomNavigationAction key={index} label={item.name} icon={<item.icon />} />
         )
