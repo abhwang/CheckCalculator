@@ -16,14 +16,14 @@ interface Props {
 
 export default function PersonItem(props: Props) {
   const [isOpen, setIsOpen] = useState(false);
-  const [newPerson, setNewPerson] = useState<Person>();
+  const [person, setPerson] = useState<Person>({ id: props.person.id, name: props.person.name });
 
   const editDialogFields = [
     {
       label: 'Edit Name',
       name: 'name',
       onChange: (e: React.ChangeEvent<HTMLInputElement>) => {
-        setNewPerson({ id: props.person.id, name: e.target.value })
+        setPerson({ id: props.person.id, name: e.target.value });
       }
     }
   ]
@@ -37,13 +37,13 @@ export default function PersonItem(props: Props) {
               edge="end"
               aria-label="Edit"
               onClick={() => {
-                setIsOpen(true)
+                setIsOpen(true);
               }}>
               <Edit />
             </IconButton>
           }>
           <ListItemText>
-            {props.person.name}
+            {person.name}
           </ListItemText>
         </ListItem>
       </List>
@@ -51,10 +51,10 @@ export default function PersonItem(props: Props) {
       <EditDialog
         open={isOpen}
         onClose={() => {
-          setIsOpen(false)
+          setIsOpen(false);
         }}
         onSubmit={() => {
-          props.onEdit(newPerson!);
+          props.onEdit(person!);
           setIsOpen(false);
         }}
         onDelete={() => {

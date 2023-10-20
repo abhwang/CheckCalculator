@@ -18,70 +18,75 @@ function App() {
   const closeDialog = () => setOpenDialog('');
 
   // Food
-  const [food, setFood] = useState({ id: '', name: '', price: 0 });
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const [food, setFood] = useState<Food>({ id: '', name: '', price: 0, members: [] });
+  const handleFoodChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setFood({ ...food, [e.target.name]: e.target.value, id: uuid() });
   }
-  const editFood = (childData: Food) => {
-    const newFoods = foods.map((item) => {
+
+  // Food Array
+  const [foodArray, setFoodArray] = useState<Food[]>([]);
+  const addFoodToArray = () => {
+    setFoodArray(prevFoodArray => [...prevFoodArray, food]);
+    closeDialog();
+  }
+  const editFoodFromArray = (childData: { id: string, name: string, price: number, members: string[] }) => {
+    const newFood = foodArray.map((item) => {
       if (item.id === childData.id) {
-        // return updated name and price
-        return { id: item.id, name: childData.name, price: childData.price }
+        // return updated name, price, and members, but keep the existing id
+        return { id: item.id, name: childData.name, price: childData.price, members: childData.members }
       } else {
         // return existing food
         return item;
       }
     })
-    setFoods(newFoods);
+    setFoodArray(newFood);
   }
-  const deleteFood = (childData: Food) => {
-    setFoods(foods.filter(function (item) {
+  const deleteFoodFromArray = (childData: Food) => {
+    setFoodArray(foodArray.filter(function (item) {
       return item.id !== childData.id
     }))
   }
   const updateMembers = (childData: Food) => {
-    const newFoods = foods.map((item) => {
-      if (item.id === childData.id) {
-        // return updated name and price
-        return { id: item.id, name: item.name, price: item.price, members: childData.members }
-      } else {
-        // return existing food
-        return item;
-      }
-    })
-    setFoods(newFoods);
+    // const newFoods = foodArray.map((item) => {
+    //   if (item.id === childData.id) {
+    //     // return updated name and price
+    //     return { id: item.id, name: item.name, price: item.price, members: childData.members }
+    //   } else {
+    //     // return existing food
+    //     return item;
+    //   }
+    // })
+    // setFoodArray(newFoods);
   }
 
-  const [foods, setFoods] = useState<Food[]>([]);
-  const addItem = () => {
-    setFoods(foods => [...foods, food]);
+
+
+  // Person
+  const [person, setPerson] = useState({ id: '', name: '' });
+  const handlePersonChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setPerson({ name: e.currentTarget.value, id: uuid() });
+  }
+
+  // People Array
+  const [peopleArray, setPeopleArray] = useState<Person[]>([]);
+  const addPersonToArray = () => {
+    setPeopleArray(prevPeopleArray => [...prevPeopleArray, person]);
     closeDialog();
   }
-
-  // People
-  const [person, setPerson] = useState({ id: '', name: '' });
-  const editPerson = (childData: Person) => {
-    // setPerson({ ...person, [e.target.name]: e.target.value });
-
-    const newPeople = people.map((item) => {
+  const editPersonFromArray = (childData: Person) => {
+    const newPerson = peopleArray.map((item) => {
       if (item.id === childData.id) {
-        // return updated name
+        // return updated name, but keep the existing id
         return { id: item.id, name: childData.name };
       } else {
         // return existing person
         return item;
       }
     })
-    setPeople(newPeople);
+    setPeopleArray(newPerson);
   }
-
-  const [people, setPeople] = useState<Person[]>([]);
-  const addPerson = () => {
-    setPeople(people => [...people, person]);
-    closeDialog();
-  }
-  const deletePerson = (childData: Person) => {
-    setPeople(people.filter(function (item) {
+  const deletePersonFromArray = (childData: Person) => {
+    setPeopleArray(peopleArray.filter(function (item) {
       return item.id !== childData.id
     }))
   }
@@ -117,7 +122,7 @@ function App() {
     {
       label: 'Enter Person',
       name: 'person',
-      onChange: (e: React.ChangeEvent<HTMLInputElement>) => setPerson({ name: e.currentTarget.value, id: uuid() })
+      onChange: handlePersonChange
     }
   ]
 
@@ -125,12 +130,12 @@ function App() {
     {
       label: 'Enter Item',
       name: 'name',
-      onChange: handleChange
+      onChange: handleFoodChange
     },
     {
       label: 'Enter Price',
       name: 'price',
-      onChange: handleChange
+      onChange: handleFoodChange
     }
   ]
 
@@ -147,13 +152,13 @@ function App() {
           {navPosition === 0 &&
             <>
               <div className='list-container'>
-                {people.map((person, index) => {
+                {peopleArray.map((person, index) => {
                   return (
                     <PersonItem
                       key={index}
                       person={person}
-                      onEdit={editPerson}
-                      onDelete={deletePerson}
+                      onEdit={editPersonFromArray}
+                      onDelete={deletePersonFromArray}
                     />
                   )
                 })}
@@ -162,7 +167,7 @@ function App() {
               <InputDialog
                 open={openDialog === 'PERSON'}
                 onClose={closeDialog}
-                onSubmit={addPerson}
+                onSubmit={addPersonToArray}
                 textItems={dialogFieldsPerson}
               />
             </>
@@ -170,13 +175,13 @@ function App() {
           {navPosition === 1 &&
             <>
               <div className='list-container'>
-                {foods.map((foodItem, index) => {
+                {foodArray.map((foodItem, index) => {
                   return <FoodItem
                     key={index}
                     food={foodItem}
-                    people={people}
-                    onEdit={editFood}
-                    onDelete={deleteFood}
+                    people={peopleArray}
+                    onEdit={editFoodFromArray}
+                    onDelete={deleteFoodFromArray}
                     addMembers={updateMembers}
                   />
                 })}
@@ -185,7 +190,7 @@ function App() {
               <InputDialog
                 open={openDialog === 'ITEM'}
                 onClose={closeDialog}
-                onSubmit={addItem}
+                onSubmit={addFoodToArray}
                 textItems={dialogFieldsFoods}
               />
             </>

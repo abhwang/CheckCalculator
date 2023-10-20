@@ -1,20 +1,21 @@
 import { ExpandMore, ExpandLess, Edit } from '@mui/icons-material';
-import { Checkbox, Collapse, IconButton, List, ListItemButton, ListItemText, unstable_ClassNameGenerator } from '@mui/material'
-import { useState } from 'react'
+import { Collapse, IconButton, List, ListItemButton, ListItemText } from '@mui/material'
+import { useState, useEffect } from 'react'
 import { Person } from './PersonItem';
 import EditDialog from './EditDialog';
+import FoodSubitem from './FoodSubitem';
 
 export interface Food {
   id: string;
   name: string;
   price: number;
-  membersList?: string[];
+  members: string[];
 }
 
 interface Props {
   food: Food;
   people: Person[];
-  onEdit: (e: Food) => void;
+  onEdit: (e: { id: string, name: string, price: number, members: string[] }) => void;
   onDelete: (e: Food) => void;
   addMembers: (e: Food) => void;
 }
@@ -23,77 +24,58 @@ export default function FoodItem(props: Props) {
   const [isExpanded, setIsExpanded] = useState(false);
   const [isOpen, setIsOpen] = useState(false);
 
-  const [newName, setNewName] = useState('');
-  const [newPrice, setNewPrice] = useState(0);
-  const [newFood, setNewFood] = useState<Food>();
+  const [id, setId] = useState(props.food.id);
+  const [name, setName] = useState(props.food.name);
+  const [price, setPrice] = useState(props.food.price);
+  const [members, setMembers] = useState<string[]>(props.food.members);
 
-  const [members, setMembers] = useState<string[]>([]);
+  useEffect(() => {
+    props.onEdit({ id, name, price, members });
+  });
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    console.log(e);
+
     switch (e.target.name) {
       case 'name':
-        setNewName(e.target.value);
+        setName(e.target.value);
         break;
       case 'price':
-        setNewPrice(Number(e.target.value));
+        setPrice(Number(e.target.value));
         break;
-
     }
-    setNewName(e.target.value);
   }
 
-  const handlePriceChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setNewPrice(Number(e.target.value));
-  }
-
-  const saveNewFood = (name: string, price: number) => {
-    setNewFood({ id: props.food.id, name: name, price: price });
-  }
-
-  const updateFoodMembers = (members: string[]) => {
-    setNewFood({ id: props.food.id, name: props.food.name, price: props.food.price, membersList: members });
-  }
-
-  const checkBoxItem = (person: Person, key: number) => {
-    let isMarked = false;
-
-    if (props.food.membersList != undefined) {
-      isMarked = props.food.membersList.includes(person.id);
+  const handleCheckBox = (e: { person: Person; checked: boolean; }) => {
+    if (e.checked === false) {
+      // if unchecked, check to see if members array includes person and remove it, if so
+      if (props.people.includes(e.person)) {
+        setMembers(members.filter(function (item) {
+          return item !== e.person.name
+        }))
+      }
+    } else {
+      // if members array doesn't already have person, add it
+      if (!members.includes(e.person.name)) {
+        setMembers(prevMembers => [...prevMembers, e.person.name]);
+      }
     }
-    const [checked, setChecked] = useState(isMarked);
-
-    return (
-      <ListItemButton key={key} onClick={() => {
-        setChecked(!checked);
-        checked === true ? setMembers(prevMembers => [...prevMembers, person.id]) : setMembers(prevMembers => prevMembers.filter((data) => data != person.id));
-        updateFoodMembers(members);
-        props.addMembers(newFood!);
-      }}>
-        <ListItemText>
-          {person.name}
-        </ListItemText>
-        <Checkbox
-          edge="end"
-          checked={checked}
-        />
-      </ListItemButton >
-    )
   }
 
   const editDialogFields = [
     {
-      label: `Edit Food (${props.food.name})`,
+      label: `Edit Food (${name})`,
       name: 'name',
       onChange: handleChange
     },
     {
-      label: `Edit Price (${props.food.price})`,
+      label: `Edit Price (${price})`,
       name: 'price',
       onChange: handleChange
     }
   ]
 
-  const convertedPrice = '$' + (Math.round(props.food.price * 100) / 100).toFixed(2);
+  const convertedPrice = '$' + (Math.round(price * 100) / 100).toFixed(2);
 
   return (
     <>
@@ -112,7 +94,7 @@ export default function FoodItem(props: Props) {
             <Edit />
           </IconButton>
           <ListItemText
-            primary={props.food.name}
+            primary={name}
             secondary={convertedPrice}
           >
           </ListItemText>
@@ -126,9 +108,14 @@ export default function FoodItem(props: Props) {
 
         <Collapse in={isExpanded} timeout="auto" unmountOnExit>
           <List component="div" disablePadding>
-            {props.people.map((person, index) => {
+            {props.people.map((person) => {
+              const isChecked = members.includes(person.name);
               return (
-                checkBoxItem(person, index)
+                <FoodSubitem
+                  person={person}
+                  checked={isChecked}
+                  onClick={handleCheckBox}
+                />
               )
             })}
           </List>
@@ -141,8 +128,7 @@ export default function FoodItem(props: Props) {
           setIsOpen(false)
         }}
         onSubmit={() => {
-          saveNewFood(newName, newPrice);
-          props.onEdit(newFood!);
+          // props.onEdit({ id, name, price, members });
           setIsOpen(false);
         }}
         onDelete={() => {
