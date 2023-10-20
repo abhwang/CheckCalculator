@@ -1,17 +1,13 @@
 import { useState } from 'react'
+import { v4 as uuid } from 'uuid';
 import CssBaseline from "@mui/material/CssBaseline";
 import { Box, Container, Fab, Paper } from '@mui/material'
-import FoodItem from './components/FoodItem'
+import FoodItem, { Food } from './components/FoodItem'
 import BottomNavBar from './components/BottomNavBar';
-import { Paid, Restaurant, Person, Add } from '@mui/icons-material';
+import { Paid, Restaurant, PersonOutlined, Add } from '@mui/icons-material';
 import TopAppBar from './components/TopAppBar';
-import DialogWindow from './components/DialogWindow';
-import PersonItem from './components/PersonItem';
-
-interface Food {
-  itemName: string;
-  itemPrice: number;
-}
+import InputDialog from './components/InputDialog';
+import PersonItem, { Person } from './components/PersonItem';
 
 function App() {
   // Bottom Navigation state
@@ -21,27 +17,53 @@ function App() {
   const [openDialog, setOpenDialog] = useState('');
   const closeDialog = () => setOpenDialog('');
 
-  // Items
-  const [item, setItem] = useState({
-    itemName: '',
-    itemPrice: 0,
-  });
+  // Food
+  const [food, setFood] = useState({ id: 0, name: '', price: 0 });
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setItem({ ...item, [e.target.name]: e.target.value });
+    setFood({ ...food, [e.target.name]: e.target.value, id: uuid() });
   }
-  const [items, setItems] = useState<Food[]>([]);
+  const editFood = (childData: Food) => {
+    const newFoods = foods.map((item) => {
+      if (item.id === childData.id) {
+        // return updated name and price
+        return { id: item.id, name: childData.name, price: childData.price }
+      } else {
+        // return existing food
+        return item;
+      }
+    })
+    setFoods(newFoods);
+  }
+
+  const [foods, setFoods] = useState<Food[]>([]);
   const addItem = () => {
-    setItems(items => [...items, item]);
+    setFoods(foods => [...foods, food]);
     closeDialog();
   }
 
   // People
-  const [personName, setPersonName] = useState('');
-  const [people, setPeople] = useState<string[]>([]);
+  const [person, setPerson] = useState({ id: 0, name: '' });
+  const editPerson = (childData: Person) => {
+    // setPerson({ ...person, [e.target.name]: e.target.value });
+
+    const newPeople = people.map((item) => {
+      if (item.id === childData.id) {
+        // return updated name
+        return { id: item.id, name: childData.name };
+      } else {
+        // return existing person
+        return item;
+      }
+    })
+    setPeople(newPeople);
+  }
+
+  const [people, setPeople] = useState<Person[]>([]);
   const addPerson = () => {
-    setPeople(prevPeople => [...prevPeople, personName]);
+    setPeople(people => [...people, person]);
     closeDialog();
   }
+
 
 
   const handleClick = () => {
@@ -58,7 +80,7 @@ function App() {
   const navItems = [
     {
       name: 'People',
-      icon: Person,
+      icon: PersonOutlined,
     },
     {
       name: 'Food Entry',
@@ -74,19 +96,19 @@ function App() {
     {
       label: 'Enter Person',
       name: 'person',
-      onChange: (e: React.ChangeEvent<HTMLInputElement>) => setPersonName(e.currentTarget.value)
+      onChange: (e: React.ChangeEvent<HTMLInputElement>) => setPerson({ name: e.currentTarget.value, id: uuid() })
     }
   ]
 
   const dialogFieldsFoods = [
     {
       label: 'Enter Item',
-      name: 'itemName',
+      name: 'name',
       onChange: handleChange
     },
     {
       label: 'Enter Price',
-      name: 'itemPrice',
+      name: 'price',
       onChange: handleChange
     }
   ]
@@ -105,19 +127,17 @@ function App() {
             <>
               <div className='list-container'>
                 {people.map((person, index) => {
-                  return <PersonItem key={index} person={person} onClick={(e) => {
-                    return (<DialogWindow
-                      open={openDialog === 'PERSON'}
-                      onClose={closeDialog}
-                      onSubmit={addPerson}
-                      textItems={dialogFieldsPerson}
+                  return (
+                    <PersonItem
+                      key={index}
+                      person={person}
+                      onEdit={editPerson}
                     />
-                    )
-                  }} />
+                  )
                 })}
               </div>
 
-              <DialogWindow
+              <InputDialog
                 open={openDialog === 'PERSON'}
                 onClose={closeDialog}
                 onSubmit={addPerson}
@@ -128,12 +148,17 @@ function App() {
           {navPosition === 1 &&
             <>
               <div className='list-container'>
-                {items.map((item, index) => {
-                  return <FoodItem key={index} itemName={item.itemName} itemPrice={item.itemPrice} people={people} />
+                {foods.map((foodItem, index) => {
+                  return <FoodItem
+                    key={index}
+                    food={foodItem}
+                    people={people}
+                    onEdit={editFood}
+                  />
                 })}
               </div>
 
-              <DialogWindow
+              <InputDialog
                 open={openDialog === 'ITEM'}
                 onClose={closeDialog}
                 onSubmit={addItem}

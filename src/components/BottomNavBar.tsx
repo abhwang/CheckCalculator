@@ -20,10 +20,13 @@ export default function BottomNavBar(props: NavItemProps) {
       value={props.position}
       onChange={props.onChange}
     >
-
       {props.navItems.map((item, index) => {
         return (
-          <BottomNavigationAction key={index} label={item.name} icon={<item.icon />} />
+          <BottomNavigationAction
+            key={index}
+            label={item.name}
+            icon={<item.icon />}
+          />
         )
       })}
     </BottomNavigation>

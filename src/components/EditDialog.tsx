@@ -17,7 +17,7 @@ interface TextItem {
   onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
 }
 
-export default function DialogWindow(props: DialogProps) {
+export default function EditDialog(props: DialogProps) {
 
   return (
     <div>
@@ -27,10 +27,8 @@ export default function DialogWindow(props: DialogProps) {
             return (
               <TextField
                 key={index}
-                autoFocus
                 margin="dense"
                 name={item.name}
-                id={item.name}
                 label={item.label}
                 type="text"
                 fullWidth
