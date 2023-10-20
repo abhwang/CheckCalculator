@@ -1,19 +1,22 @@
 import { ExpandMore, ExpandLess, Edit } from '@mui/icons-material';
-import { Checkbox, Collapse, IconButton, List, ListItemButton, ListItemText } from '@mui/material'
+import { Checkbox, Collapse, IconButton, List, ListItemButton, ListItemText, unstable_ClassNameGenerator } from '@mui/material'
 import { useState } from 'react'
 import { Person } from './PersonItem';
 import EditDialog from './EditDialog';
 
 export interface Food {
-  id: number;
+  id: string;
   name: string;
   price: number;
+  membersList?: string[];
 }
 
 interface Props {
   food: Food;
   people: Person[];
   onEdit: (e: Food) => void;
+  onDelete: (e: Food) => void;
+  addMembers: (e: Food) => void;
 }
 
 export default function FoodItem(props: Props) {
@@ -24,7 +27,18 @@ export default function FoodItem(props: Props) {
   const [newPrice, setNewPrice] = useState(0);
   const [newFood, setNewFood] = useState<Food>();
 
-  const handleNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const [members, setMembers] = useState<string[]>([]);
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    switch (e.target.name) {
+      case 'name':
+        setNewName(e.target.value);
+        break;
+      case 'price':
+        setNewPrice(Number(e.target.value));
+        break;
+
+    }
     setNewName(e.target.value);
   }
 
@@ -32,20 +46,50 @@ export default function FoodItem(props: Props) {
     setNewPrice(Number(e.target.value));
   }
 
-  const saveNewFood = () => {
-    setNewFood({ id: props.food.id, name: newName, price: newPrice });
+  const saveNewFood = (name: string, price: number) => {
+    setNewFood({ id: props.food.id, name: name, price: price });
+  }
+
+  const updateFoodMembers = (members: string[]) => {
+    setNewFood({ id: props.food.id, name: props.food.name, price: props.food.price, membersList: members });
+  }
+
+  const checkBoxItem = (person: Person, key: number) => {
+    let isMarked = false;
+
+    if (props.food.membersList != undefined) {
+      isMarked = props.food.membersList.includes(person.id);
+    }
+    const [checked, setChecked] = useState(isMarked);
+
+    return (
+      <ListItemButton key={key} onClick={() => {
+        setChecked(!checked);
+        checked === true ? setMembers(prevMembers => [...prevMembers, person.id]) : setMembers(prevMembers => prevMembers.filter((data) => data != person.id));
+        updateFoodMembers(members);
+        props.addMembers(newFood!);
+      }}>
+        <ListItemText>
+          {person.name}
+        </ListItemText>
+        <Checkbox
+          edge="end"
+          checked={checked}
+        />
+      </ListItemButton >
+    )
   }
 
   const editDialogFields = [
     {
       label: `Edit Food (${props.food.name})`,
       name: 'name',
-      onChange: handleNameChange
+      onChange: handleChange
     },
     {
       label: `Edit Price (${props.food.price})`,
       name: 'price',
-      onChange: handlePriceChange
+      onChange: handleChange
     }
   ]
 
@@ -84,7 +128,7 @@ export default function FoodItem(props: Props) {
           <List component="div" disablePadding>
             {props.people.map((person, index) => {
               return (
-                CheckBoxItem(person, index)
+                checkBoxItem(person, index)
               )
             })}
           </List>
@@ -97,30 +141,16 @@ export default function FoodItem(props: Props) {
           setIsOpen(false)
         }}
         onSubmit={() => {
-          saveNewFood();
+          saveNewFood(newName, newPrice);
           props.onEdit(newFood!);
+          setIsOpen(false);
+        }}
+        onDelete={() => {
+          props.onDelete(props.food);
           setIsOpen(false);
         }}
         textItems={editDialogFields}
       />
     </>
-  )
-}
-
-function CheckBoxItem(person: Person, key: number) {
-  const [checked, setChecked] = useState(false);
-
-  return (
-    <ListItemButton key={key} onClick={() => {
-      setChecked(!checked)
-    }}>
-      <ListItemText>
-        {person.name}
-      </ListItemText>
-      <Checkbox
-        edge="end"
-        checked={checked}
-      />
-    </ListItemButton >
   )
 }

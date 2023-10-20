@@ -8,6 +8,7 @@ interface DialogProps {
   open: boolean;
   onClose: (e: React.MouseEvent<HTMLElement>) => void;
   onSubmit: (e: React.MouseEvent<HTMLElement>) => void;
+  onDelete: (e: React.MouseEvent<HTMLElement>) => void;
   textItems: TextItem[];
 }
 
@@ -39,6 +40,7 @@ export default function EditDialog(props: DialogProps) {
           })}
         </DialogContent>
         <DialogActions>
+          <Button onClick={props.onDelete}>Delete</Button>
           <Button onClick={props.onClose}>Cancel</Button>
           <Button onClick={props.onSubmit}>Submit</Button>
         </DialogActions>

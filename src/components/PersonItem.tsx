@@ -4,13 +4,14 @@ import { IconButton, List, ListItem, ListItemText } from '@mui/material'
 import EditDialog from './EditDialog';
 
 export interface Person {
-  id: number;
+  id: string;
   name: string;
 }
 
 interface Props {
   person: Person;
   onEdit: (e: Person) => void;
+  onDelete: (e: Person) => void;
 }
 
 export default function PersonItem(props: Props) {
@@ -54,6 +55,10 @@ export default function PersonItem(props: Props) {
         }}
         onSubmit={() => {
           props.onEdit(newPerson!);
+          setIsOpen(false);
+        }}
+        onDelete={() => {
+          props.onDelete(props.person);
           setIsOpen(false);
         }}
         textItems={editDialogFields}

@@ -18,7 +18,7 @@ function App() {
   const closeDialog = () => setOpenDialog('');
 
   // Food
-  const [food, setFood] = useState({ id: 0, name: '', price: 0 });
+  const [food, setFood] = useState({ id: '', name: '', price: 0 });
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setFood({ ...food, [e.target.name]: e.target.value, id: uuid() });
   }
@@ -34,6 +34,23 @@ function App() {
     })
     setFoods(newFoods);
   }
+  const deleteFood = (childData: Food) => {
+    setFoods(foods.filter(function (item) {
+      return item.id !== childData.id
+    }))
+  }
+  const updateMembers = (childData: Food) => {
+    const newFoods = foods.map((item) => {
+      if (item.id === childData.id) {
+        // return updated name and price
+        return { id: item.id, name: item.name, price: item.price, members: childData.members }
+      } else {
+        // return existing food
+        return item;
+      }
+    })
+    setFoods(newFoods);
+  }
 
   const [foods, setFoods] = useState<Food[]>([]);
   const addItem = () => {
@@ -42,7 +59,7 @@ function App() {
   }
 
   // People
-  const [person, setPerson] = useState({ id: 0, name: '' });
+  const [person, setPerson] = useState({ id: '', name: '' });
   const editPerson = (childData: Person) => {
     // setPerson({ ...person, [e.target.name]: e.target.value });
 
@@ -63,7 +80,11 @@ function App() {
     setPeople(people => [...people, person]);
     closeDialog();
   }
-
+  const deletePerson = (childData: Person) => {
+    setPeople(people.filter(function (item) {
+      return item.id !== childData.id
+    }))
+  }
 
 
   const handleClick = () => {
@@ -132,6 +153,7 @@ function App() {
                       key={index}
                       person={person}
                       onEdit={editPerson}
+                      onDelete={deletePerson}
                     />
                   )
                 })}
@@ -154,6 +176,8 @@ function App() {
                     food={foodItem}
                     people={people}
                     onEdit={editFood}
+                    onDelete={deleteFood}
+                    addMembers={updateMembers}
                   />
                 })}
               </div>
