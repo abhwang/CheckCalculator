@@ -1,9 +1,8 @@
 import { ExpandMore, ExpandLess, Edit } from '@mui/icons-material';
-import { Collapse, IconButton, List, ListItemButton, ListItemText } from '@mui/material'
+import { Checkbox, Collapse, IconButton, List, ListItemButton, ListItemText } from '@mui/material'
 import { useState, useEffect } from 'react'
 import { Person } from './PersonItem';
 import EditDialog from './EditDialog';
-import FoodSubitem from './FoodSubitem';
 
 export interface Food {
   id: string;
@@ -17,7 +16,6 @@ interface Props {
   people: Person[];
   onEdit: (e: { id: string, name: string, price: number, members: string[] }) => void;
   onDelete: (e: Food) => void;
-  addMembers: (e: Food) => void;
 }
 
 export default function FoodItem(props: Props) {
@@ -111,11 +109,7 @@ export default function FoodItem(props: Props) {
             {props.people.map((person) => {
               const isChecked = members.includes(person.name);
               return (
-                <FoodSubitem
-                  person={person}
-                  checked={isChecked}
-                  onClick={handleCheckBox}
-                />
+                SubItem(person, isChecked, handleCheckBox)
               )
             })}
           </List>
@@ -128,7 +122,6 @@ export default function FoodItem(props: Props) {
           setIsOpen(false)
         }}
         onSubmit={() => {
-          // props.onEdit({ id, name, price, members });
           setIsOpen(false);
         }}
         onDelete={() => {
@@ -138,5 +131,24 @@ export default function FoodItem(props: Props) {
         textItems={editDialogFields}
       />
     </>
+  )
+}
+
+function SubItem(person: Person, isChecked: boolean, onClick: (e: { person: Person; checked: boolean; }) => void) {
+  const [checked, setChecked] = useState(isChecked);
+
+  return (
+    <ListItemButton onClick={() => {
+      setChecked(!checked);
+      onClick({ person: person, checked: !checked })
+    }}>
+      <ListItemText>
+        {person.name}
+      </ListItemText>
+      <Checkbox
+        edge="end"
+        checked={checked}
+      />
+    </ListItemButton >
   )
 }

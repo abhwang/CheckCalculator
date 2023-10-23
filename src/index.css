@@ -4,3 +4,11 @@
   box-sizing: border-box;
   font-family: Roboto, sans-serif;
 }
+
+.container {
+  margin-top: 30px;
+}
+
+.preserve-white-space {
+  white-space: pre;
+}

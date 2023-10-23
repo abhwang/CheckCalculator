@@ -8,6 +8,7 @@ import { Paid, Restaurant, PersonOutlined, Add } from '@mui/icons-material';
 import TopAppBar from './components/TopAppBar';
 import InputDialog from './components/InputDialog';
 import PersonItem, { Person } from './components/PersonItem';
+import PersonSummaryCard from './components/PersonSummaryCard';
 
 function App() {
   // Bottom Navigation state
@@ -46,20 +47,6 @@ function App() {
       return item.id !== childData.id
     }))
   }
-  const updateMembers = (childData: Food) => {
-    // const newFoods = foodArray.map((item) => {
-    //   if (item.id === childData.id) {
-    //     // return updated name and price
-    //     return { id: item.id, name: item.name, price: item.price, members: childData.members }
-    //   } else {
-    //     // return existing food
-    //     return item;
-    //   }
-    // })
-    // setFoodArray(newFoods);
-  }
-
-
 
   // Person
   const [person, setPerson] = useState({ id: '', name: '' });
@@ -74,7 +61,7 @@ function App() {
     closeDialog();
   }
   const editPersonFromArray = (childData: Person) => {
-    const newPerson = peopleArray.map((item) => {
+    const newPeopleArray = peopleArray.map((item) => {
       if (item.id === childData.id) {
         // return updated name, but keep the existing id
         return { id: item.id, name: childData.name };
@@ -83,14 +70,13 @@ function App() {
         return item;
       }
     })
-    setPeopleArray(newPerson);
+    setPeopleArray(newPeopleArray);
   }
   const deletePersonFromArray = (childData: Person) => {
     setPeopleArray(peopleArray.filter(function (item) {
       return item.id !== childData.id
     }))
   }
-
 
   const handleClick = () => {
     switch (navPosition) {
@@ -148,7 +134,7 @@ function App() {
           Check Calculator
         </TopAppBar>
 
-        <Container>
+        <Container className='container'>
           {navPosition === 0 &&
             <>
               <div className='list-container'>
@@ -172,6 +158,7 @@ function App() {
               />
             </>
           }
+
           {navPosition === 1 &&
             <>
               <div className='list-container'>
@@ -182,7 +169,6 @@ function App() {
                     people={peopleArray}
                     onEdit={editFoodFromArray}
                     onDelete={deleteFoodFromArray}
-                    addMembers={updateMembers}
                   />
                 })}
               </div>
@@ -193,6 +179,14 @@ function App() {
                 onSubmit={addFoodToArray}
                 textItems={dialogFieldsFoods}
               />
+            </>
+          }
+
+          {navPosition === 2 &&
+            <>
+              {peopleArray.map((person) => {
+                return <PersonSummaryCard person={person} foodArray={foodArray}></PersonSummaryCard>
+              })}
             </>
           }
 
