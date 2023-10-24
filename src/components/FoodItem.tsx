@@ -19,7 +19,7 @@ interface Props {
 }
 
 export default function FoodItem(props: Props) {
-  const [isExpanded, setIsExpanded] = useState(false);
+  const [isExpanded, setIsExpanded] = useState(true);
   const [isOpen, setIsOpen] = useState(false);
 
   const [id, setId] = useState(props.food.id);

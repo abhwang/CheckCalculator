@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { v4 as uuid } from 'uuid';
 import CssBaseline from "@mui/material/CssBaseline";
-import { Box, Container, Fab, Paper } from '@mui/material'
+import { Box, Container, Fab, Paper, TextField } from '@mui/material'
 import FoodItem, { Food } from './components/FoodItem'
 import BottomNavBar from './components/BottomNavBar';
 import { Paid, Restaurant, PersonOutlined, Add } from '@mui/icons-material';
@@ -17,6 +17,12 @@ function App() {
   // Dialog Window state
   const [openDialog, setOpenDialog] = useState('');
   const closeDialog = () => setOpenDialog('');
+
+  // Tax and Tip state
+  const [subtotal, setSubtotal] = useState(0);
+  const [tax, setTax] = useState(0);
+  const [tip, setTip] = useState(0);
+
 
   // Food
   const [food, setFood] = useState<Food>({ id: '', name: '', price: 0, members: [] });
@@ -162,6 +168,7 @@ function App() {
           {navPosition === 1 &&
             <>
               <div className='list-container'>
+
                 {foodArray.map((foodItem, index) => {
                   return <FoodItem
                     key={index}
@@ -184,8 +191,10 @@ function App() {
 
           {navPosition === 2 &&
             <>
+              <TextField id="outlined-basic" label={`Tax ${tax}`} variant="outlined" onChange={(value) => setTax(Number(value.target.value))} />
+              <TextField id="outlined-basic" label={`Tip ${tip}`} variant="outlined" onChange={(value) => setTip(Number(value.target.value))} />
               {peopleArray.map((person) => {
-                return <PersonSummaryCard person={person} foodArray={foodArray}></PersonSummaryCard>
+                return <PersonSummaryCard person={person} foodArray={foodArray} numPeople={peopleArray.length} tax={tax} tip={tip} subtotal={subtotal}></PersonSummaryCard>
               })}
             </>
           }
