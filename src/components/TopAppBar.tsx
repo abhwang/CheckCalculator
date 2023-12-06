@@ -4,7 +4,7 @@ interface Props {
   children: string;
 }
 
-export default function TopAppBar({ children }: Props) {
+const TopAppBar = ({ children }: Props) => {
   return (
     <AppBar position='static'>
       <Toolbar>
@@ -15,3 +15,5 @@ export default function TopAppBar({ children }: Props) {
     </AppBar>
   )
 }
+
+export default TopAppBar
