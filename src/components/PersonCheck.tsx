@@ -45,7 +45,7 @@ const PersonCheck = ({ foods, person, totalTax, totalTip, numPeople }: Props) =>
   check.tax = Number(((totalTax / subtotal) * check.subtotal).toFixed(2));
 
   // Divide tip evenly
-  check.tip = (totalTip / numPeople);
+  check.tip = Number((totalTip / numPeople).toFixed(2));
 
   // Calculate person total
   check.total = Number((check.subtotal + check.tax + check.tip).toFixed(2));
