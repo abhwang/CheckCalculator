@@ -93,7 +93,10 @@ function App() {
           <BottomNavBar
             navItems={navItems}
             navPosition={navPosition}
-            onChange={(e, newNavPosition) => setNavPosition(newNavPosition)}
+            onChange={(e, newNavPosition) => {
+              e.preventDefault()
+              setNavPosition(newNavPosition)
+            }}
           />
         </Paper>
       </Box >

@@ -1,5 +1,5 @@
 import { Edit, ExpandLess, ExpandMore } from '@mui/icons-material'
-import { Checkbox, Collapse, IconButton, List, ListItemButton, ListItemText } from '@mui/material'
+import { Collapse, IconButton, List, ListItemButton, ListItemText } from '@mui/material'
 import { useState } from 'react'
 import EditDialog from './EditDialog'
 import { Food } from '../models/Food'
